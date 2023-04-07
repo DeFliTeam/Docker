@@ -1,0 +1,56 @@
+
+
+Update .env file with feeder-id
+
+Inside your application directory (/opt/adsb), edit the .env file using your favourite text editor. Beginners may find the editor nano easy to use:
+
+nano /opt/adsb/.env
+
+This file holds all of the commonly used variables (such as our latitude, longitude and altitude). We're going to add our DeFli feeder-id to this file. Add the following line to the file:
+
+DEFLI_FEEDER_ID=YOURFEEDERID
+
+Replace YOURFEEDERID with the feeder-id that was generated on the Defli Explorer UUID Creation http://defli-wallet.bubbleapps.io/
+
+DeFli_FEEDER_ID=acbf1f88-09a4-3a47-a4a0-10ae138d0c1g 
+
+# Deploying DeFli Software 
+
+Open the docker-compose.yml file that was created when deploying readsb.
+
+Append the following lines to the end of the file (inside the services: section):
+
+  defli:
+    image: PATH TO DEFLI IMAGE
+    tty: true
+    container_name: defli
+    restart: always
+    depends_on:
+      - readsb
+    ports:
+      - 8081:8080
+    environment:
+      - BEASTHOST=readsb
+      - LAT=${FEEDER_LAT}
+      - LONG=${FEEDER_LONG}
+      - TZ=${FEEDER_TZ}
+      - FEEDER_ID=${Defli_FEEDER_ID}
+    tmpfs:
+      - /run:exec,size=64M
+      - /var/log
+      
+  If you are in the USA and are also running the dump978 container with a second SDR, add the following additional lines to the environment: section:
+  
+        - UAT_RECEIVER_TYPE=relay
+      - UAT_RECEIVER_HOST=dump978
+      
+   Once the file has been updated, issue the command docker compose up -d in the application directory to apply the changes and bring up the defli container. You should see the following output:
+   
+   readsb is up-to-date
+adsbx is up-to-date
+Creating defli 
+
+Once running visit the DeFli explorer and update your location and height (altitude) using the same figures in the .env file
+
+Remember, if you change your location and altitude, you'll need to update your .env file locally (and re-run docker compose up -d from your application directory)!
+
