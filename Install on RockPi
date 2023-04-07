@@ -1,0 +1,109 @@
+
+# Install DeFli Docker Image on RockPi Boards 
+
+# Download and Install Ubuntu Image on eMMC 
+ 
+ Download here- https://wiki.radxa.com/Rockpi4/downloads 
+ 
+ Follow the instructions to install the image to eMMC Card- https://wiki.radxa.com/Rockpi4/getting_started
+ 
+ # Login to RockPi 
+ 
+ Default username: rock
+Default password: rock
+
+
+
+Install openssh-server, nano and get dhcp assigned IP
+
+$ sudo apt-get update
+$ sudo apt-get install openssh-server nano
+$ ifconfig
+
+SSH to Rock Pi 
+
+ssh rock@x.x.x.x
+
+# Set Up System 
+
+Unminimize the ubuntu image
+
+$ sudo unminimize
+$ sudo reboot
+
+Disable WiFi Interface 
+
+$ sudo nano /etc/modprobe.d/blacklist.conf
+
+	Add the following two lines to the end of the file
+        # Wireless Networking
+        blacklist bcmdhd
+
+$ sudo reboot
+
+Create the "hosts" file
+
+$ sudo nano /etc/hosts
+
+	Add:
+		127.0.0.1       localhost
+		127.0.1.1       rockpi.yourdomain.local       rockpi
+		192.168.1.14    rockpi.yourdomain.local       rockpi
+    
+ Change "hostname" file
+ 
+ $ sudo nano /etc/hostname
+
+	Change: localhost.localdomain To: rockpi
+  
+  Setup Static IP
+  
+  $ sudo nano /etc/netplan/01-netcfg.yaml
+
+	Add:
+		# This file describes the network interfaces available on your system
+		# For more information, see netplan(5).
+		network:
+		  version: 2
+		  renderer: networkd
+		  ethernets:
+		    eth0:
+		      addresses: [ 192.168.1.10/24 ] <----- Enter your IP
+		      gateway4: 192.168.1.1
+		      nameservers:
+		          search: [ yourdomain.local ]
+		          addresses:
+		              - "8.8.8.8"  <----- Your DNS Servers
+		              - "8.8.4.4"
+
+$ sudo reboot
+
+Reconnect using the new static IP address
+
+# Install Docker 
+
+$ sudo apt-get update
+
+$ sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+$ sudo apt-key fingerprint 0EBFCD88
+
+$ sudo add-apt-repository  \
+"deb [arch=arm64] https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) \
+stable"
+
+$ sudo apt-get update
+
+$ sudo apt-get install docker-ce
+
+
+
+
+
+
+ 
+ 
+ 
