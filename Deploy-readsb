@@ -1,0 +1,74 @@
+
+# Deploy "readsb"
+
+The "readsb" container is the heart of our "adsb" application. It receives 1090MHz ADS-B ES RF signals from your DeFli Receiver, and demodulates ADS-B messages, making them available for all other containers.
+
+In your favourite text editor, create a file named docker-compose.yml in your application directory (/opt/adsb) if following along verbatim.
+
+nano docker-compose.yml
+
+version: '3.8'
+
+volumes:
+  readsbpb_rrd:
+  readsbpb_autogain:
+
+services:
+  readsb:
+    image: ghcr.io/sdr-enthusiasts/docker-readsb-protobuf:latest
+    tty: true
+    container_name: readsb
+    hostname: readsb
+    restart: always
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    ports:
+      - 8080:8080
+    environment:
+      - TZ=${FEEDER_TZ}
+      - READSB_DEVICE_TYPE=deflirec
+      - READSB_deflirec_DEVICE=UUID
+      - READSB_GAIN=autogain
+      - READSB_LAT=${FEEDER_LAT}
+      - READSB_LON=${FEEDER_LONG}
+      - READSB_RX_LOCATION_ACCURACY=2
+      - READSB_STATS_RANGE=true
+      - READSB_NET_ENABLE=true
+    volumes:
+      - readsbpb_rrd:/run/collectd
+      - readsbpb_autogain:/run/autogain
+    tmpfs:
+      - /run/readsb
+      - /var/log
+      
+      The above wiil: 
+      
+      Create two docker volumes, readsbpb_rrd and readsb_autogain, which are used to store the RRD files and autogain state files respectively.
+      Create a service named readsb that will run the the DeFli protobuf container 
+      We're presenting the USB bus through to this container (so readsb can talk to the USB-attached DeFli Receiver 
+      We're mapping TCP port 8080 through to the container so we can access the web interface
+      The variable READSB_deflirec_DEVICE tells readsb to look for an DeFli receiver device with the UUID assigned by the mfr 
+      We're passing several environment variables through, including our timezone, latitude and longitude from the .env file (denoted by ${VARIABLE}).
+      We're using tmpfs for volumes that have regular I/O. Any files stored in a tmpfs mount are temporarily stored outside the container's writable layer. This helps to reduce
+      The size of the container, by not writing changes to the underlying container; and
+      SD Card or SSD wear
+      
+      Once this file is created, issue the command docker compose up -d to bring up the environment.
+      
+      docker compose up -d
+      
+      You should see the following output:
+      
+      Creating network "adsb_default" with the default driver
+Creating readsb         ... done
+
+# Viewing Live Data 
+
+To verify the container is working correctly you can use the following command to bring up live data
+
+docker exec -it readsb viewadsb
+
+Press CTRL-C to escape this screen
+
+You should also be able to point your web browser at http://docker.host.ip.addr:8080/ to view the web interface (change docker.host.ip.addr to the IP address of your docker host). You should see a map showing your currently tracked aircraft, and a link to the "Performance Graphs".
+
