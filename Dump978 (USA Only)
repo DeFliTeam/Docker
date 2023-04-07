@@ -1,0 +1,72 @@
+
+The "dump978" container receives 978MHz UAT signals from your DeFli Receiver, and demodulates ADS-B UAT messages, making them available for all other containers.
+
+Open the docker-compose.yml file that was created when deploying readsb.
+
+Append the following lines to the end of the file (inside the services: section):
+
+  dump978:
+    image: INSERT DEFLI IMAGE PATH
+    tty: true
+    container_name: dump978
+    restart: always
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    environment:
+      - TZ=${FEEDER_TZ}
+      - LAT=${FEEDER_LAT}
+      - LON=${FEEDER_LONG}
+      - DUMP978_deflirec_DEVICE=978
+    tmpfs:
+      - /run/readsb
+      - /run/uat2json 
+      
+      Update readsb container configuration
+      
+      Before running docker compose, we also want to update the configuration of the readsb container, so that it pulls the demodulated UAT data from the dump978 container.
+      
+      Open the docker-compose.yml and add the following environment variable to the readsb service:
+      
+            - READSB_NET_CONNECTOR=dump978,37981,raw_in
+            
+     So, if your readsb service has not been modified from the previous step, it should look now look like this:
+     
+     version: '3.8'
+
+volumes:
+  readsbpb_rrd:
+  readsbpb_autogain:
+
+services:
+  readsb:
+    image: PATH TO protobuf DeFli IMAGE
+    tty: true
+    container_name: readsb
+    hostname: readsb
+    restart: always
+    devices:
+      - /dev/bus/usb
+    ports:
+      - 8080:8080
+    environment:
+      - TZ=${FEEDER_TZ}
+      - READSB_DEVICE_TYPE=deflirec
+      - READSB_DEFLIREC_DEVICE=UUID
+      - READSB_GAIN=autogain
+      - READSB_LAT=${FEEDER_LAT}
+      - READSB_LON=${FEEDER_LONG}
+      - READSB_RX_LOCATION_ACCURACY=2
+      - READSB_STATS_RANGE=true
+      - READSB_NET_ENABLE=true
+      - READSB_NET_CONNECTOR=dump978,37981,raw_in
+    volumes:
+      - readsbpb_rrd:/run/collectd
+      - readsbpb_autogain:/run/autogain
+    tmpfs:
+      - /run/readsb
+      
+      At this point, you can issue the command docker compose up -d to refresh both the readsb and dump978 containers.
+      
+      To see the data being received and decoded by our new container, run the command docker exec -it readsb viewadsb. This should display a real-time departure-lounge-style screen showing all the aircraft being tracked. Look for entries in the Mode column listed as ADS-R/UAT.
+      
+      
