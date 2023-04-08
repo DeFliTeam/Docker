@@ -15,7 +15,7 @@ volumes:
 
 services:
   readsb:
-    image: https://github.com/DeFliTeam/Docker/blob/main/readsb-protobuf-4.0.2.zip
+    image: https://github.com/DeFliTeam/Docker/blob/main/readsb-protobuf-4.0.2.tar.gz
     tty: true
     container_name: readsb
     hostname: readsb
