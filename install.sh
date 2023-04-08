@@ -1,7 +1,7 @@
 #!/bin/bash
 #shellcheck shell=bash external-sources=false disable=SC1090,SC2164
 # DOCKER-INSTALL.SH -- Installation script for the Docker infrastructure on a Raspbian or Ubuntu system
-# Usage: source <(curl -s PATH)
+# Usage: source <(curl -s https://github.com/DeFliTeam/Docker/blob/main/install.sh)
 #
 # Copyright 2021-2023 DeFli- licensed under the terms and conditions of DeFli Commercial
 # The terms and conditions of this license are included with the Github
