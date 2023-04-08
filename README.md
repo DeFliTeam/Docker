@@ -34,6 +34,10 @@ These can be obtained from https://www.freemaptools.com/elevation-finder.htm
 
 Please follow the instructions in this file order: 
 
+Installation Instructions/ Install on RockPi 
+Install.sh 
+
+
 
 
 
