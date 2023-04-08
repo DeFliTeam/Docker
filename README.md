@@ -36,6 +36,8 @@ Please follow the instructions in this file order:
 
 Installation Instructions/ Install on RockPi 
 Install.sh 
+Deployreadsb 
+
 
 
 
