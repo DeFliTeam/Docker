@@ -15,7 +15,7 @@ volumes:
 
 services:
   readsb:
-    image: ghcr.io/sdr-enthusiasts/docker-readsb-protobuf:latest
+    image: https://github.com/DeFliTeam/Docker/blob/main/readsb-protobuf-4.0.2.zip
     tty: true
     container_name: readsb
     hostname: readsb
