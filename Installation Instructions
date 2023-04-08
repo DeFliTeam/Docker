@@ -74,8 +74,7 @@ sudo systemctl restart dhcpcd
 
 # Docker-Install 
 
-The docker-install.sh script helps users get ready to use the DeFli Docker containers (PLEASE NOTE THAT THIS SCRIPT DOWNLOAD LOCATION WILL BE MADE AVAILABLE ONLY AFTER THE PURCHASE OF A LICENSE) 
-
+The docker-install.sh script helps users get ready to use the DeFli Docker containers (curl -s https://github.com/DeFliTeam/Docker/blob/main/install.sh)
 It will check, and if necessary install the following components and settings: 
 
 docker 
