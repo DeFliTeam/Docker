@@ -28,6 +28,12 @@ linux/arm/64 (Raspberry Pi running 64 bit OS)
 NOTE UPON INSTALLING THE DeFli Docker You Will Need to Know: 
 Altitude 
 Long/Lat to 5 decimal places 
-These can be obtained from https://www.freemaptools.com/elevation-finder.htm 
+These can be obtained from https://www.freemaptools.com/elevation-finder.htm  
+
+# Instructions 
+
+Please follow the instructions in this file order: 
+
+
 
 
