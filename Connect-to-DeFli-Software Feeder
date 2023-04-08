@@ -21,7 +21,7 @@ Open the docker-compose.yml file that was created when deploying readsb.
 Append the following lines to the end of the file (inside the services: section):
 
   defli:
-    image: PATH TO DEFLI IMAGE
+    image: ghcr.io/sdr-enthusiasts/docker-readsb-protobuf:latest
     tty: true
     container_name: defli
     restart: always
