@@ -1,0 +1,22 @@
+# readsbrrd service for systemd
+
+[Unit]
+Description=Round Robin Database statistics collector for readsb ADS-B receiver.
+Documentation=https://github.com/mictronics/readsb-protobuf
+After=readsb.service
+Wants=readsb.service
+
+[Service]
+WorkingDirectory=/var/lib/collectd/rrd/localhost/readsb
+StandardOutput=null
+StandardError=journal
+EnvironmentFile=/etc/default/readsb
+User=readsb
+ExecStart=/usr/bin/readsbrrd $RRD_OPTIONS
+Type=simple
+Restart=on-failure
+RestartSec=30
+Nice=19
+
+[Install]
+WantedBy=default.target

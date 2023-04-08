@@ -1,51 +1,40 @@
-# Docker
-Docker Instructions to Run DeFli Software as Docker Container 
+# Readsb
 
-# Overview 
-This document aims to guide you through installing DeFli Software as a Docker Container. This enables you to run DeFli concurrently with other DeWi network protocols such as TTN or Helium 
+[Portmanteau of *Read ADSB*]
 
-# Concepts 
-Receiving ADSB data with readsb-protobuf 
-Feeding data to DeFli server 
+Readsb is a Mode-S/ADSB/TIS decoder for RTLSDR, BladeRF, Modes-Beast and GNS5894 devices.
+As a former fork of [dump1090-fa](https://github.com/flightaware/dump1090) it is using that code base
+but development will continue as a standalone project with new name. Readsb can co-exist on the same
+host system with dump1090-fa, it doesn't use or modify its resources. However both programs will not
+share a receiver device at the same time and in parallel.
 
-The core set of containers consists of: readsb-protobuf, the DeFli feeder container and tar1090. These are deployed in conjunction with the DeFli ADS-B Recevier (RTL-SDR)
+This version uses Googles protocol buffer for data storage and exchange with web application.
+Saves up to 70% in storage space and bandwidth.
 
-<a href="https://ibb.co/JdVZBvg"><img src="https://i.ibb.co/CtgL1bD/Helium-Hotspot.png" alt="Helium-Hotspot" border="0"></a><br /><a target='_blank' href='https://imgbb.com/'>post a picture</a><br /> 
+###### Disclaimer
+This is a personal, hobbyist project with no commercial background.
 
-To explain the flowchart above: 
+### Warning
 
-ADS-B transmissions are received via the 1090MHz antenna and DeFli Receiver Unit 
-The DeFli Receiver Unit is mapped through to a readsb container container, this container's function is to decode the ADS-B transmissions and makes them available via beast. 
-The DeFli feeder container, this container reads Beast protocol data from readsb and submits flight data to the DeFli service. 
-Flight data is visualised using tar1090 
+:exclamation: **This version of readsb is not compatible with any prior version.**
 
-The container will run on 
+:exclamation: **This version of readsb is not compatible with any third party software or script that requires JSON output for statistical or aircraft data.**
 
-linux/amd64 (Intel/AMD PC's/Servers) 
-linux/arm/v7 (Raspberry Pi) 
-linux/arm/64 (Raspberry Pi running 64 bit OS) 
+### Push server support
 
-NOTE UPON INSTALLING THE DeFli Docker You Will Need to Know: 
-Altitude 
-Long/Lat to 5 decimal places 
-These can be obtained from https://www.freemaptools.com/elevation-finder.htm  
+readsb tries to connect to a listening server, like a push server.
 
-# Instructions 
+For example feeding adsbexchange.com use the parameters:
+```
+--net-connector feed.adsbexchange.com,30005,beast_out
+```
 
-Please follow the instructions in this file order: 
+### BeastReduce output
 
-Installation Instructions/ Install on RockPi,
+Selectively forwards beast messages if the received data hasn't been forwarded in the last 125 ms (or `--net-beast-reduce-interval`).
+Data not related to the physical aircraft state are only forwarded every 500 ms (4 * `--net-beast-reduce-interval`).The messages of
+this output are normal beast messages and compatible with every program able to receive beast messages.
 
-Install.sh,
+## readsb Debian/Raspbian/Ubuntu packages
 
-Application Environment, 
-
-Deployreadsb,
-
-Connect to DeFli Software Feeder
-
-
-
-
-
-
+See [INSTALL](INSTALL.md) for installation and build process.
