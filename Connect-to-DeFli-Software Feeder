@@ -1,56 +1,50 @@
 
 
-Update .env file with feeder-id
+Open the docker-compose.yml file that was created when deploying readsb. 
 
-Inside your application directory (/opt/adsb), edit the .env file using your favourite text editor. Beginners may find the editor nano easy to use:
+Append the following lines to the end of the file (inside the services: section). Please edit the following parameters: 
 
-nano /opt/adsb/.env
+READSB_NET_CONNECTOR 
 
-This file holds all of the commonly used variables (such as our latitude, longitude and altitude). We're going to add our DeFli feeder-id to this file. Add the following line to the file:
+remove dump978,37981,raw_in; if you don't have are not in the USA 
 
-DEFLI_FEEDER_ID=YOURFEEDERID
+Add the DeFli feed in the format feed.defli.org,30004,beast_reduce_plus_out; 
 
-Replace YOURFEEDERID with the feeder-id that was generated on the Defli Explorer UUID Creation http://defli-wallet.bubbleapps.io/
+UUID - enter your UUID here -- obtained from registration on DeFli explorer 
 
-DeFli_FEEDER_ID=acbf1f88-09a4-3a47-a4a0-10ae138d0c1g 
+MLAT_CONFIG add the DeFli Feed- feed.defli.org,31090,39000;feed.defli.org,64006,39001;
 
-# Deploying DeFli Software 
+The FEEDER_LAT, FEEDER_LONG, and FEEDER_ALT_M variables should already exist in your .env file, but if they don't feel free to replace these values with your station's Latitude, Longitude (in decimal degrees), and Altitude above the ground (in (whole) meters)
+ 
+The file now should now look like this: 
 
-Open the docker-compose.yml file that was created when deploying readsb.
-
-Append the following lines to the end of the file (inside the services: section):
-
-  defli:
-    image: https://github.com/DeFliTeam/Docker/blob/main/readsb-protobuf-4.0.2.tar.gz
+  multifeeder:
+    image: ghcr.io/sdr-enthusiasts/docker-multifeeder
     tty: true
-    container_name: defli
+    container_name: multifeeder
+    hostname: multifeeder
     restart: always
-    depends_on:
-      - readsb
-    ports:
-      - 8081:8080
     environment:
-      - BEASTHOST=readsb
-      - LAT=${FEEDER_LAT}
-      - LONG=${FEEDER_LONG}
       - TZ=${FEEDER_TZ}
-      - FEEDER_ID=${Defli_FEEDER_ID}
+      - READSB_NET_CONNECTOR=readsb,30005,beast_in;dump978,37981,raw_in;feed.adsb.fi,31090,39000;feed.adsb.one,64006,39001;
+      - UUID=YOUR UUID
+      - MLAT_CONFIG=feed.defli.org,31090,39000;feed.defli.org,64006,39001;
+      - READSB_LAT=${FEEDER_LAT}
+      - READSB_LON=${FEEDER_LONG}
+      - READSB_ALT=${FEEDER_ALT_M}m
+    
+    
     tmpfs:
-      - /run:exec,size=64M
+      - /run/readsb
       - /var/log
-      
-  If you are in the USA and are also running the dump978 container with a second SDR, add the following additional lines to the environment: section:
-  
-        - UAT_RECEIVER_TYPE=relay
-      - UAT_RECEIVER_HOST=dump978
-      
-   Once the file has been updated, issue the command docker compose up -d in the application directory to apply the changes and bring up the defli container. You should see the following output:
-   
-   readsb is up-to-date
-adsbx is up-to-date
-Creating defli 
 
-Once running visit the DeFli explorer and update your location and height (altitude) using the same figures in the .env file
 
-Remember, if you change your location and altitude, you'll need to update your .env file locally (and re-run docker compose up -d from your application directory)!
+
+Once the file has been updated, issue the command docker compose pull && docker compose up -d in the application directory to apply the changes and bring up the multifeeder container. You should see the following output:
+
+readsb is up-to-date
+defli is up-to-date
+Creating multifeeder...
+
+
 
