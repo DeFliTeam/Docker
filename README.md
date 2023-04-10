@@ -6,4 +6,5 @@ Please proceed in this order, follow the instructions in each file. To obtain yo
 2) Prepare Application Environment
 3) Deploy-Readsb 
 4) Deploy Dump 978 (US Only) 
-5) Connect to DeFli Software Feeder
+5) Connect to DeFli Software Feeder 
+6) Grafana Connect
