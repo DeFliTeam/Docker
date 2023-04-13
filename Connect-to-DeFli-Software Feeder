@@ -26,7 +26,7 @@ The file now should now look like this:
     restart: always
     environment:
       - TZ=${FEEDER_TZ}
-      - READSB_NET_CONNECTOR=readsb,30005,beast_in;dump978,37981,raw_in;feed.adsb.fi,31090,39000;feed.adsb.one,64006,39001;
+      - READSB_NET_CONNECTOR=readsb,30005,beast_in;dump978,37981,raw_in;feed.defli.org,31090,39000;feed.defli.org,64006,39001;
       - UUID=YOUR UUID
       - MLAT_CONFIG=feed.defli.org,31090,39000;feed.defli.org,64006,39001;
       - READSB_LAT=${FEEDER_LAT}
