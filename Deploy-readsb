@@ -59,7 +59,7 @@ services:
     environment:
       - TZ=${FEEDER_TZ}
       - READSB_DEVICE_TYPE=deflirec
-      - READSB_deflirec_DEVICE=UUID
+      - READSB_rtlsdr_DEVICE=UUID
       - READSB_GAIN=autogain
       - READSB_LAT=${FEEDER_LAT}
       - READSB_LON=${FEEDER_LONG}
