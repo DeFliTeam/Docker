@@ -9,6 +9,8 @@ fakeroot git
 git clone --branch dev --depth 1 --single-branch https://github.com/mictronics/readsb-protobuf.git
 cd readsb-protobuf
 
+dpkg-buildpackage -b -uc --build-profiles=rtlsdr
+
 
 # Deploy "readsb"
 
