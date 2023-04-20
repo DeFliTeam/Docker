@@ -20,6 +20,16 @@ cd readsb-protobuf
 
 dpkg-buildpackage -b -uc --build-profiles=rtlsdr
 
+# Identify SDR Device Path 
+
+Plug in your USB radio, and run the command lsusb. Find your radio. It'll look something like this:
+
+Bus 001 Device 004: ID 0bda:2832 Realtek Semiconductor Corp. RTL2832U DVB-T 
+
+Take note of the USB bus number, and USB device number. 
+In the output above, its 001 and 004 respectively. While the individual device can be passed through (/dev/bus/usb/001/004 in this case), it's more reliable to pass the entire USB bus through, as seen in the examples below.
+
+
 
 # Deploy "readsb"
 
@@ -66,11 +76,18 @@ services:
       The above wiil: 
       
       Create two docker volumes, readsbpb_rrd and readsb_autogain, which are used to store the RRD files and autogain state files respectively.
-      Create a service named readsb that will run the the DeFli protobuf container 
+      
+      Create a service named readsb that will run the the DeFli protobuf container
+      
       We're presenting the USB bus through to this container (so readsb can talk to the USB-attached DeFli Receiver 
+      
       We're mapping TCP port 8080 through to the container so we can access the web interface
+      
       The variable READSB_deflirec_DEVICE tells readsb to look for an DeFli receiver device with the UUID assigned by the mfr 
+      
       We're passing several environment variables through, including our timezone, latitude and longitude from the .env file (denoted by ${VARIABLE}).
+      
+      
       We're using tmpfs for volumes that have regular I/O. Any files stored in a tmpfs mount are temporarily stored outside the container's writable layer. This helps to reduce
       The size of the container, by not writing changes to the underlying container; and
       SD Card or SSD wear
