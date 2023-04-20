@@ -97,4 +97,4 @@ After running this script, your system should be ready to use docker and docker 
 # Running the DeFli Script 
 
 To run the DeFli script you will require the script location which is obtained post license purchase you then use the command 
-bash <(curl -s https://github.com/DeFliTeam/Docker/blob/main/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/DeFliTeam/Docker/main/install.sh)
