@@ -1,3 +1,14 @@
+sudo apt-get update
+sudo apt-get upgrade
+
+sudo apt-get --no-install-suggests --no-install-recommends install collectd-core rrdtool librrd-dev \
+libprotobuf-c-dev protobuf-c-compiler libncurses5-dev libusb-1.0-0-dev \
+lighttpd build-essential binutils cmake debhelper dh-systemd pkg-config \
+fakeroot git 
+
+git clone --branch dev --depth 1 --single-branch https://github.com/mictronics/readsb-protobuf.git
+cd readsb-protobuf
+
 
 # Deploy "readsb"
 
