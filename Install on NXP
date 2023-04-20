@@ -181,5 +181,55 @@ Press CTRL-C to escape this screen
 
 You should also be able to point your web browser at http://docker.host.ip.addr:8080/ to view the web interface (change docker.host.ip.addr to the IP address of your docker host). You should see a map showing your currently tracked aircraft, and a link to the "Performance Graphs".
 
+# Connect to Feeder 
+
+Open the docker-compose.yml file that was created when deploying readsb. 
+
+Append the following lines to the end of the file (inside the services: section). Please edit the following parameters: 
+
+READSB_NET_CONNECTOR 
+
+remove dump978,37981,raw_in; if you don't have are not in the USA 
+
+Add the DeFli feed in the format feed.defli.org,30004,beast_reduce_plus_out; 
+
+UUID - enter your UUID here -- obtained from registration on DeFli explorer 
+
+MLAT_CONFIG add the DeFli Feed- feed.defli.org,31090,39000;feed.defli.org,64006,39001;
+
+The FEEDER_LAT, FEEDER_LONG, and FEEDER_ALT_M variables should already exist in your .env file, but if they don't feel free to replace these values with your station's Latitude, Longitude (in decimal degrees), and Altitude above the ground (in (whole) meters)
+ 
+The file now should now look like this: 
+
+  multifeeder:
+    image: ghcr.io/sdr-enthusiasts/docker-multifeeder
+    tty: true
+    container_name: multifeeder
+    hostname: multifeeder
+    restart: always
+    environment:
+      - TZ=${FEEDER_TZ}
+      - READSB_NET_CONNECTOR=readsb,30005,beast_in;dump978,37981,raw_in;feed.defli.org,31090,39000;feed.defli.org,64006,39001;
+      - UUID=YOUR UUID
+      - MLAT_CONFIG=feed.defli.org,31090,39000;feed.defli.org,64006,39001;
+      - READSB_LAT=${FEEDER_LAT}
+      - READSB_LON=${FEEDER_LONG}
+      - READSB_ALT=${FEEDER_ALT_M}m
+    
+    
+    tmpfs:
+      - /run/readsb
+      - /var/log
+
+
+
+Once the file has been updated, issue the command docker compose pull && docker compose up -d in the application directory to apply the changes and bring up the multifeeder container. You should see the following output:
+
+readsb is up-to-date
+defli is up-to-date
+Creating multifeeder...
+
+# Connect Grafana 
+
 
 
