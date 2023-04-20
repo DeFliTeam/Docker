@@ -1,0 +1,22 @@
+# Installaing DeFli on NXP Boards Including Milesight and MatchX M2 Pro. 
+
+Ensure your laptop or computer has internet connection and the device is turned on. 
+The device should be available for connection using the SSID in the format of "MatchX_BOX_xxxx"
+The default password is "matchxiot" 
+
+After connected, users can use ssh with terminal or putty in Windows to login 192.168.8.1, the default password is root.
+If you are using Ethernet or WiFi you can replace the IP address with your own assigned to the device. 
+
+Your command line should now read "root@OpenWrt". 
+
+# Install Docker 
+
+root@192.168.8.1:[~]#opkg list-installed | grep docker
+docker - 20.10.12-1
+docker-compose - 1.28.2-1
+dockerd - 20.10.12-1
+luci-app-dockerman - v0.5.13
+luci-lib-docker - git-21.167.46325-83f6606
+python3-docker - 4.4.1-1
+python3-dockerpty - 0.4.1-3 
+
