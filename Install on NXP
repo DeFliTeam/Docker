@@ -20,3 +20,9 @@ luci-lib-docker - git-21.167.46325-83f6606
 python3-docker - 4.4.1-1
 python3-dockerpty - 0.4.1-3 
 
+# Run Install Script 
+
+curl -s https://raw.githubusercontent.com/DeFliTeam/Docker/main/install.sh) 
+
+
+
