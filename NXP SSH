@@ -1,0 +1,8 @@
+Ensure your laptop or computer has internet connection and the device is turned on. 
+The device should be available for connection using the SSID in the format of "MatchX_BOX_xxxx"
+The default password is "matchxiot" 
+
+After connected, users can use ssh with terminal or putty in Windows to login 192.168.8.1, the default password is root.
+If you are using Ethernet or WiFi you can replace the IP address with your own assigned to the device. 
+
+Your command line should now read "root@OpenWrt". 
