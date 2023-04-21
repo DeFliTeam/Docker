@@ -1,0 +1,44 @@
+A simple installation solution when using the Helium Dual Mining Protocol. 
+
+Note you must have your DeFli (or other brand) receiver plugged in.
+
+# SSH 
+
+SSH access to your host device is required. This varies depending on your board/host. 
+If you are using RPI you can use one of the following links 
+
+https://www.raspberrypi.com/documentation/computers/remote-access.html#secure-shell-from-windows-10
+https://www.raspberrypi.com/documentation/computers/remote-access.html#secure-shell-from-linux-or-mac-os 
+
+# Install Decoder 
+
+sudo bash -c "$(wget -O - https://github.com/wiedehopf/adsb-scripts/raw/master/readsb-install.sh)"
+sudo reboot 
+
+# Set the Gain 
+
+sudo bash -c "$(curl -L -o - https://github.com/wiedehopf/adsb-scripts/raw/master/autogain-install.sh)"
+hash -r 
+
+for i in {0..30}; do sudo autogain1090; sleep 120; done 
+
+# Set Location 
+
+sudo readsb-set-location 50.12344 10.23429
+OR
+sudo /usr/local/bin/readsb-set-location 50.12344 10.23429 
+
+# Web Interface 
+
+available at http://address-of-pi/tar1090 
+
+If you get Connection refused, install lighttpd: 
+
+sudo apt install -y lighttpd 
+
+# Connect Feed 
+
+curl -L -o /tmp/axfeed.sh https://adsbexchange.com/feed.sh
+sudo bash /tmp/axfeed.sh 
+
+And that is it!
