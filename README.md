@@ -1,6 +1,6 @@
 # Installation Instructions 
 
-Please proceed in this order, follow the instructions in each file. To obtain your UUID you need to register at http://defli-wallet.bubbleapps.io/: 
+Please proceed in this order, follow the instructions in each file. To obtain your UUID you need to register at wallet.defli.network
 
 1) Installation Instructions (Raspberry Pi) Install on RockPi (Other models) 
 2) Prepare Application Environment
