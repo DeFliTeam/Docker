@@ -1,0 +1,417 @@
+his install requires two docker containers. 
+
+The first is protobuf 
+
+protobuf has some pre-requisites you must first complete before deploying the container: 
+
+    Blacklist Modules (SDR Unplugged). Copy and paste the entire code from below and press enter to enable it to run. 
+
+    sudo tee /etc/modprobe.d/blacklist-rtlsdr.conf <<TEXT1
+
+    # Blacklist host from loading modules for RTL-SDRs to ensure they
+
+    # are left available for the Docker guest.
+
+    blacklist dvb_core
+
+    blacklist dvb_usb_rtl2832u
+
+    blacklist dvb_usb_rtl28xxu
+
+    blacklist dvb_usb_v2
+
+    blacklist r820t
+
+    blacklist rtl2830
+
+    blacklist rtl2832
+
+    blacklist rtl2832_sdr
+
+    blacklist rtl2838
+
+    blacklist rtl8192cu
+
+    blacklist rtl8xxxu
+
+    # This alone will not prevent a module being loaded if it is a
+
+    # required or an optional dependency of another module. Some kernel
+
+    # modules will attempt to load optional modules on demand, which we
+
+    # mitigate here by causing /bin/false to be run instead of the module.
+
+    #
+
+    # The next time the loading of the module is attempted, the /bin/false
+
+    # will be executed instead. This will prevent the module from being
+
+    # loaded on-demand. Source: https://access.redhat.com/solutions/41278
+
+    install dvb_core /bin/false
+
+    install dvb_usb_rtl2832u /bin/false
+
+    install dvb_usb_rtl28xxu /bin/false
+
+    install dvb_usb_v2 /bin/false
+
+    install r820t /bin/false
+
+    install rtl2830 /bin/false
+
+    install rtl2832 /bin/false
+
+    install rtl2832_sdr /bin/false
+
+    install rtl2838 /bin/false
+
+    install rtl8192cu /bin/false
+
+    install rtl8xxxu /bin/false
+
+    TEXT1 
+
+Step 2- Unload modules by running the commands given below (SDR Unplugged)
+
+sudo modprobe -r rtl2832_sdr
+
+sudo modprobe -r dvb_usb_rtl2832u
+
+sudo modprobe -r dvb_usb_rtl28xxu
+
+sudo modprobe -r dvb_usb_v2
+
+sudo modprobe -r r820t
+
+sudo modprobe -r rtl2830
+
+sudo modprobe -r rtl2832
+
+sudo modprobe -r rtl2838
+
+sudo modprobe -r rtl8192cu
+
+sudo modprobe -r rtl8xxxu
+
+sudo modprobe -r dvb_core
+
+Step 3- Update the boot image with the below command  (SDR Unplugged)
+
+sudo update-initramfs -u 
+
+Now you must identify your RTL-SDR’s path. Plug in the SDR and run the below command: 
+
+lsusb 
+
+The output will look like something below: 
+
+Bus 001 Device 004: ID 0bda:2832 Realtek Semiconductor Corp. RTL2832U DVB-T 
+
+Take note of the USB Bus Number and USB Device Number
+
+Up and Running 
+
+Start the docker container passing through the USB 
+
+docker volume create readsbpb_rrd
+
+docker volume create readsbpb_autogain
+
+docker run \
+
+ -d \
+
+ -it \
+
+ --restart=always \
+
+ --name readsb \
+
+ --hostname readsb \
+
+ --device /dev/bus/usb:/dev/bus/usb \
+
+ -p 8080:8080 \
+
+ -p 30005:30005 \
+
+ -e TZ=<YOUR_TIMEZONE> \
+
+ -e READSB_DCFILTER=true \
+
+ -e READSB_DEVICE_TYPE=rtlsdr \
+
+ -e READSB_FIX=true \
+
+ -e READSB_GAIN=autogain \
+
+ -e READSB_LAT=<YOUR_LATITUDE> \
+
+ -e READSB_LON=<YOUR_LONGITUDE> \
+
+ -e READSB_MODEAC=true \
+
+ -e READSB_RX_LOCATION_ACCURACY=2 \
+
+ -e READSB_STATS_RANGE=true \
+
+ -e READSB_NET_ENABLE=true \
+
+ -v readsbpb_autogain:/run/autogain \
+
+ -v readsbpb_rrd:/run/collectd \
+
+ --tmpfs=/run:exec,size=64M \
+
+ --tmpfs=/var/log:size=32M \
+
+ ghcr.io/sdr-enthusiasts/docker-readsb-protobuf:latest
+
+An example of how this would look after you have amended the details to your own 
+
+docker volume create readsbpb_rrd
+
+docker volume create readsbpb_autogain
+
+docker run \
+
+ -d \
+
+ -it \
+
+ --restart=always \
+
+ --name readsb \
+
+ --hostname readsb \
+
+ --device /dev/bus/usb:/dev/bus/usb \
+
+ -p 8080:8080 \
+
+ -p 30005:30005 \
+
+ -e TZ=Australia/Perth \
+
+ -e READSB_DCFILTER=true \
+
+ -e READSB_DEVICE_TYPE=rtlsdr \
+
+ -e READSB_FIX=true \
+
+ -e READSB_GAIN=autogain \
+
+ -e READSB_LAT=33.33333 \
+
+ -e READSB_LON=-111.11111 \
+
+ -e READSB_MODEAC=true \
+
+ -e READSB_RX_LOCATION_ACCURACY=2 \
+
+ -e READSB_STATS_RANGE=true \
+
+ -e READSB_NET_ENABLE=true \
+
+ -v readsbpb_autogain:/run/autogain \
+
+ -v readsbpb_rrd:/run/collectd \
+
+ --tmpfs=/run:exec,size=64M \
+
+ --tmpfs=/var/log:size=32M \
+
+ ghcr.io/sdr-enthusiasts/docker-readsb-protobuf:latest
+
+Up and Running With Docker Compose 
+
+An example docker-compose.yml file is below: 
+
+version: '2.0'
+
+volumes:
+
+  readsbpb_rrd:
+
+  readsbpb_autogain:
+
+services:
+
+  readsb:
+
+    image: ghcr.io/sdr-enthusiasts/docker-readsb-protobuf:latest
+
+    tty: true
+
+    container_name: readsb
+
+    hostname: readsb
+
+    restart: always
+
+    devices:
+
+      - /dev/bus/usb:/dev/bus/usb
+
+    ports:
+
+      - 8080:8080
+
+      - 30005:30005
+
+    environment:
+
+      - TZ=Australia/Perth
+
+      - READSB_DCFILTER=true
+
+      - READSB_DEVICE_TYPE=rtlsdr
+
+      - READSB_FIX=true
+
+      - READSB_GAIN=autogain
+
+      - READSB_LAT=-33.33333
+
+      - READSB_LON=111.11111
+
+      - READSB_MODEAC=true
+
+      - READSB_RX_LOCATION_ACCURACY=2
+
+      - READSB_STATS_RANGE=true
+
+      - READSB_NET_ENABLE=true
+
+    volumes:
+
+      - readsbpb_rrd:/run/collectd
+
+      - readsbpb_autogain:/run/autogain
+
+      - /proc/diskstats:/proc/diskstats:ro
+
+    tmpfs:
+
+      - /run/readsb:size=64M
+
+      - /var/log:size=32M
+
+Once running, you can test the container to ensure it is correctly receiving & decoding ADSB traffic by issuing the command: 
+
+docker exec -it readsb viewadsb 
+
+Which should display a departure-lounge-style screen showing all the aircraft being tracked.
+
+The second container required, tar1090
+
+Up and Running With Docker-Run 
+
+docker run -d \
+
+    --name=tar1090 \
+
+    -p 8078:80 \
+
+    -e TZ=<TIMEZONE> \
+
+    -e BEASTHOST=readsb \
+
+    -e LAT=xx.xxxxx \
+
+    -e LONG=xx.xxxxx \
+
+    -v /opt/adsb/tar1090/graphs1090:/var/lib/collectd \
+
+    --tmpfs=/run:exec,size=64M \
+
+    --tmpfs=/var/log \
+
+    ghcr.io/sdr-enthusiasts/docker-tar1090:latest
+
+Be sure to change the timezone and input your latitude and longitude 
+
+You should now be able to browse to:
+
+    http://dockerhost:8078/ to access the tar1090 web interface
+
+    http://dockerhost:8078/?replay to see a replay of past data
+
+    http://dockerhost:8078/?heatmap to see the heatmap for the past 24 hours.
+
+    http://dockerhost:8078/?heatmap&realHeat to see a different heatmap for the past 24 hours.
+
+    http://dockerhost:8078/graphs1090/ to see performance graphs
+
+Up and Running With Docker-Compose 
+
+An example docker-compose.xml file is below: 
+
+version: '3.8'
+
+services:
+
+  tar1090:
+
+    image: ghcr.io/sdr-enthusiasts/docker-tar1090:latest
+
+    tty: true
+
+    container_name: tar1090
+
+    restart: always
+
+    environment:
+
+      - TZ=Australia/Perth
+
+      - BEASTHOST=readsb
+
+      - LAT=-33.33333
+
+      - LONG=111.11111
+
+    volumes:
+
+      - /opt/adsb/tar1090/globe_history:/var/globe_history
+
+      - /opt/adsb/tar1090/timelapse1090:/var/timelapse1090
+
+      - /opt/adsb/tar1090/graphs1090:/var/lib/collectd
+
+      - /proc/diskstats:/proc/diskstats:ro
+
+    # - /run/airspy_adsb:/run/airspy_adsb
+
+    ports:
+
+      - 8078:80
+
+    tmpfs:
+
+      - /run:exec,size=64M
+
+      - /var/log 
+
+Don’t forget to change your timezone and latitude / longitude. 
+
+You should now be able to browse to:
+
+    http://dockerhost:8078/ to access the tar1090 web interface.
+
+    http://dockerhost:8078/?replay to see a replay of past data
+
+    http://dockerhost:8078/?heatmap to see the heatmap for the past 24 hours.
+
+    http://dockerhost:8078/?heatmap&realHeat to see a different heatmap for the past 24 hours.
+
+    http://dockerhost:8078/graphs1090/ to see performance graphs
+
+Data Connector 
+
+To send your data to us please use the instructions here www.defli.network/data-connector 
+
+Please note that the location of your aircraft.json is here http://192.168.x.yy:8087/data/aircraft.json
