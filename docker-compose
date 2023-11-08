@@ -1,0 +1,150 @@
+
+
+Step 1: Run this command to install docker and docker compose, install your RTLSDR and blacklist drivers. 
+
+bash <(curl -s https://raw.githubusercontent.com/sdr-enthusiasts/docker-install/main/docker-install.sh)
+
+Step 2: Create a new directory by running command sudo mkdir deflidocker. Enter this directory using command cd /home/deflidocker
+
+Step 3: Whilst in this directory create a new file with command sudo nano docker-compose-readsb.yml  
+You will be presented with a blank file. Copy the following text and paste it in to the file. You will need to change your latitude, longitude and timezone. Once you have done this, save the file by pressing ctl + x and entering “y” when promoted about saving the file.
+
+version: '2.0'
+
+volumes:
+
+  readsbpb_rrd:
+
+  readsbpb_autogain:
+
+services:
+
+  readsb:
+
+    image: ghcr.io/sdr-enthusiasts/docker-readsb-protobuf:latest
+
+    tty: true
+
+    container_name: readsb
+
+    hostname: readsb
+
+    restart: always
+
+    devices:
+
+      - /dev/bus/usb:/dev/bus/usb
+
+    ports:
+
+      - 8080:8080
+
+      - 30005:30005
+
+    environment:
+
+      - TZ=Australia/Perth
+
+      - READSB_DCFILTER=true
+
+      - READSB_DEVICE_TYPE=rtlsdr
+
+      - READSB_FIX=true
+
+      - READSB_GAIN=autogain
+
+      - READSB_LAT=-33.33333
+
+      - READSB_LON=111.11111
+
+      - READSB_MODEAC=true
+
+      - READSB_RX_LOCATION_ACCURACY=2
+
+      - READSB_STATS_RANGE=true
+
+      - READSB_NET_ENABLE=true
+
+    volumes:
+
+      - readsbpb_rrd:/run/collectd
+
+      - readsbpb_autogain:/run/autogain
+
+      - /proc/diskstats:/proc/diskstats:ro
+
+    tmpfs:
+
+      - /run/readsb:size=64M
+
+      - /var/log:size=32M
+
+Step 4: As you did with step 3, you are going to a new file. Ensure you are still inside the “deflidocker” directory and run command sudo nano docker-compose-tar1090.yml 
+
+Again you will be presented with a blank file. Copy the text from below and paste it in to the file. You will need to again change the variables for latitude, longitude and timezone. Once you have done this you can press ctrl + x to exit and then “y” to save. 
+
+version: '3.8'
+
+services:
+
+  tar1090:
+
+    image: ghcr.io/sdr-enthusiasts/docker-tar1090:latest
+
+    tty: true
+
+    container_name: tar1090
+
+    restart: always
+
+    environment:
+
+      - TZ=Australia/Perth
+
+      - BEASTHOST=readsb
+
+      - MLATHOST=adsbx
+
+      - LAT=-33.33333
+
+      - LONG=111.11111
+
+    volumes:
+
+      - /opt/adsb/tar1090/globe_history:/var/globe_history
+
+      - /opt/adsb/tar1090/timelapse1090:/var/timelapse1090
+
+      - /opt/adsb/tar1090/graphs1090:/var/lib/collectd
+
+      - /proc/diskstats:/proc/diskstats:ro
+
+    # - /run/airspy_adsb:/run/airspy_adsb
+
+    ports:
+
+      - 8078:80
+
+    tmpfs:
+
+      - /run:exec,size=64M
+
+      - /var/log
+
+Step 5: Run the following command to start your docker-compose services   docker compose -f docker-compose-readsb.yml up -d
+
+You should now be able to browse to:
+
+    http://dockerhost:8078/ to access the tar1090 web interface.
+
+    http://dockerhost:8078/?replay to see a replay of past data
+
+    http://dockerhost:8078/?heatmap to see the heatmap for the past 24 hours.
+
+    http://dockerhost:8078/?heatmap&realHeat to see a different heatmap for the past 24 hours.
+
+    http://dockerhost:8078/graphs1090/ to see performance graphs
+
+Step 6- Data Connector. To send your data to us please use the instructions here www.defli.network/data-connector 
+
+Please note that the location of your aircraft.json is here http://192.168.x.yy:8087/data/aircraft.json
