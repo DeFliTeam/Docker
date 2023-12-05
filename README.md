@@ -1,10 +1,18 @@
-# Installation Instructions 
+# Installation Instructions # 
 
-Please proceed in this order, follow the instructions in each file. To obtain your UUID you need to register at wallet.defli.network
+3 Containers 
 
-1) Installation Instructions (Raspberry Pi) Install on RockPi (Other models) 
-2) Prepare Application Environment
-3) Deploy-Readsb 
-4) Deploy Dump 978 (US Only) 
-5) Connect to DeFli Software Feeder 
-6) Grafana Connect
+Readsb 
+Tar1090 
+Dump978 
+
+All docker-compose.yml format  
+
+Give each a new title as docker-compose-readsb.yml,  docker-compose-tart1090.yml,  docker-compose-dump978.yml 
+
+Change environment parameters on each for your own GS specifically, TZ, LAT & LON 
+
+Data Feed via NodeRed, see NodeRed Section 
+
+Output should be on http//localhost:8078
+
