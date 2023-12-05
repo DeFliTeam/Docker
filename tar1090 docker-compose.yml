@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  tar1090:
+    image: ghcr.io/sdr-enthusiasts/docker-tar1090:latest
+    tty: true
+    container_name: tar1090
+    restart: always
+    
+    environment:
+      
+
+    -TZ=Australia/Perth
+    -BEASTHOST=readsb
+    -LAT=-33.33333
+    -LONG=111.11111
+        volumes:
+            /opt/adsb/tar1090/globe_history:/var/globe_history
+                /opt/adsb/tar1090/timelapse1090:/var/timelapse1090
+                /opt/adsb/tar1090/graphs1090:/var/lib/collectd
+                /proc/diskstats:/proc/diskstats:ro
+       
+        ports:
+            8078:80
+        tmpfs:
+            /run:exec,size=64M
+                /var/log
