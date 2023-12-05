@@ -1,0 +1,39 @@
+version: "2.0"
+
+volumes:
+  readsbpb_rrd:
+  readsbpb_autogain:
+
+services:
+  readsb:
+    image: ghcr.io/sdr-enthusiasts/docker-readsb-protobuf:latest
+    tty: true
+    container_name: readsb
+    hostname: readsb
+    restart: always
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    ports:
+      - 8080:8080
+      - 30005:30005
+    environment:
+      - TZ=Australia/Perth
+      - READSB_DCFILTER=true
+      - READSB_DEVICE_TYPE=rtlsdr
+      - READSB_FIX=true
+      - READSB_GAIN=autogain
+      - READSB_LAT=-33.33333
+      - READSB_LON=111.11111
+      - READSB_MODEAC=true
+      - READSB_RX_LOCATION_ACCURACY=2
+      - READSB_STATS_RANGE=true
+      - READSB_NET_ENABLE=true 
+      - UAT_RECEIVER_TYPE=relay
+      - UAT_RECEIVER_HOST=<DOCKERHOST>,37982,beast_in 
+    volumes:
+      - readsbpb_rrd:/run/collectd
+      - readsbpb_autogain:/run/autogain
+      - /proc/diskstats:/proc/diskstats:ro
+    tmpfs:
+      - /run/readsb:size=64M
+      - /var/log:size=32M
